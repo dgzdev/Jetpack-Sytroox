@@ -1,0 +1,26 @@
+{
+	"name": "Jetpack-Sytroox",
+	"tree": {
+		"$className": "DataModel",
+
+		"ReplicatedStorage": {
+			"Modules": {
+				"$path": "Source/Shared"
+			}
+		},
+
+		"ServerScriptService": {
+			"[Rojo-Server]": {
+				"$path": "Source/Server"
+			}
+		},
+
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"[Rojo-Client]": {
+					"$path": "Source/Client"
+				}
+			}
+		}
+	}
+}
