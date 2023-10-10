@@ -4,8 +4,11 @@ local ServerStorage = game:GetService("ServerStorage")
 
 local MODULE_FOLDER = ReplicatedStorage.Modules
 
-local ProfileService = require(MODULE_FOLDER.ProfileService)
+local ProfileService = require(ServerStorage.Storage.ProfileService)
+
 local ProfileData = require(ServerStorage.Storage.ProfileData)
+local Events = require(ServerStorage.Storage.Events)
+
 local ProfileStore = ProfileService.GetProfileStore("PLAYER_DATA", ProfileData)
 
 local PlayerManager = {}
@@ -16,7 +19,6 @@ function PlayerManager.OnPlayerAdded(Player: Player)
 	local Profile = ProfileStore:LoadProfileAsync(`Player_{Player.UserId}`, "ForceLoad")
 	if Profile ~= nil then
 		Profile:AddUserId(Player.UserId) -- GDPR compliance
-		Profile:Reconcile() -- Fill in missing variables from ProfileTemplate (optional)
 		Profile:ListenToRelease(function()
 			Profiles[Player] = nil
 			-- The Profile could've been loaded on another Roblox server:
@@ -24,6 +26,7 @@ function PlayerManager.OnPlayerAdded(Player: Player)
 		end)
 		if Player:IsDescendantOf(Players) == true then
 			Profiles[Player] = Profile
+			Events.PROFILE_READY:Fire(Player, Profile.Data)
 			-- A Profile has been successfully loaded:
 		else
 			-- Player left before the Profile loaded:
