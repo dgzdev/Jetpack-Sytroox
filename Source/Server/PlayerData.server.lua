@@ -18,7 +18,7 @@ local Profiles = require(MODULE_FOLDER.Profiles)
 function PlayerManager.OnPlayerAdded(Player: Player)
 	local Profile = ProfileStore:LoadProfileAsync(`Player_{Player.UserId}`, "ForceLoad")
 	if Profile ~= nil then
-		Profile:AddUserId(Player.UserId) -- GDPR compliance
+		Profile:AddUserId(Player.UserId)
 		Profile:ListenToRelease(function()
 			Profiles[Player] = nil
 			-- The Profile could've been loaded on another Roblox server:
