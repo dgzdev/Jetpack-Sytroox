@@ -1,23 +1,25 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local VolatileModules = {}
+local VolatileModules: { [number]: Module } = {}
 local ModuleManager = {}
 
 local Events = ReplicatedStorage:WaitForChild("Events")
+local Profiles = require(ReplicatedStorage.Modules.Profiles)
 
-local Modules = script:GetChildren()
+local Modules: { [number]: ModuleScript } = script:GetChildren()
 
-function ModuleManager.OnProfileReceive(Profile)
+ModuleManager.OnProfileReceive = function(Profile: Profiles.Profile): Profiles.Profile
 	for _, Module in pairs(VolatileModules) do
 		if Module.OnProfileReceive ~= nil then
-			Module.OnProfileReceive(Profile)
+			Module:OnProfileReceive(Profile)
 		end
 	end
+	return Profile
 end
 Events.PROFILE_EVENT.OnClientEvent:Connect(ModuleManager.OnProfileReceive)
 
-local function EnableModule(Module: Script)
+ModuleManager.EnableModule = function(self, Module: ModuleScript)
 	if Module:IsA("ModuleScript") == false then
 		return
 	end
@@ -26,5 +28,9 @@ local function EnableModule(Module: Script)
 end
 
 for _, Module in ipairs(Modules) do
-	EnableModule(Module)
+	ModuleManager:EnableModule(Module)
 end
+
+export type Module = {
+	OnProfileReceive: (self: Module, Profile: Profiles.Profile) -> any,
+}
